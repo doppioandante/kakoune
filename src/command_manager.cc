@@ -5,6 +5,7 @@
 #include "context.hh"
 #include "flags.hh"
 #include "register_manager.hh"
+#include "scheme_manager.hh"
 #include "shell_manager.hh"
 #include "utils.hh"
 #include "optional.hh"
@@ -168,6 +169,8 @@ Token::Type token_type(StringView type_name)
         return Token::Type::RawQuoted;
     else if (type_name == "sh")
         return Token::Type::ShellExpand;
+    else if (type_name == "scheme")
+        return Token::Type::SchemeExpand;
     else if (type_name == "reg")
         return Token::Type::RegisterExpand;
     else if (type_name == "opt")
@@ -277,6 +280,11 @@ String expand_token(const Token& token, const Context& context,
         str.resize(str.length() - trailing_eol_count, 0);
         return str;
 
+    }
+    case Token::Type::SchemeExpand:
+    {
+        auto str = SchemeManager::instance().eval(content, context);
+        return str;
     }
     case Token::Type::RegisterExpand:
         return context.main_sel_register_value(content).str();

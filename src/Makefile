@@ -49,7 +49,7 @@ else ifneq (,$(findstring CYGWIN,$(os)))
     CPPFLAGS += -D_XOPEN_SOURCE=700
     LIBS += -lncursesw -lboost_regex -ldbghelp
 else
-    LIBS += -lncursesw -lboost_regex
+    LIBS += -lncursesw -lboost_regex -lchibi-scheme
     CPPFLAGS += -I$(NCURSESW_INCLUDE)
     LDFLAGS += -rdynamic
 endif

@@ -21,6 +21,7 @@
 #include "register_manager.hh"
 #include "remote.hh"
 #include "scope.hh"
+#include "scheme_manager.hh"
 #include "shared_string.hh"
 #include "shell_manager.hh"
 #include "string.hh"
@@ -542,6 +543,7 @@ int run_server(StringView session, StringView server_init,
     FaceRegistry        face_registry;
     ClientManager       client_manager;
     BufferManager       buffer_manager;
+    SchemeManager       scheme_manager;
 
     register_options();
     register_env_vars();
@@ -677,6 +679,7 @@ int run_filter(StringView keystr, StringView commands, ConstArrayView<StringView
     RegisterManager register_manager;
     ClientManager   client_manager;
     BufferManager   buffer_manager;
+    SchemeManager   scheme_manager;
 
     register_options();
     register_env_vars();
