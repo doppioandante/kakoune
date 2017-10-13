@@ -7,6 +7,46 @@
 namespace Kakoune
 {
 
+static inline String content_to_string(ConstArrayView<String> values)
+{
+    constexpr const char list_separator = ':';
+    String res;
+
+    bool first = true;
+    for (auto it : values)
+    {
+        if (not first)
+        {
+            res += list_separator;
+        }
+        res += escape(it, list_separator, '\\');
+        first = false;
+    }
+    return res;
+}
+
+class WatchedRegister: public Register
+{
+public:
+    WatchedRegister(Codepoint name, std::unique_ptr<Register> reg):
+        m_name(name),
+        m_register(std::move(reg))
+        {}
+    void set(Context& ctx, ConstArrayView<String> values) override
+    {
+        m_register->set(ctx, values);
+        ctx.hooks().run_hook("RegisterChanged", format("{}={}", m_name, content_to_string(values)), ctx);
+    }
+
+    ConstArrayView<String> get(const Context& ctx) override
+    {
+        return m_register->get(ctx);
+    }
+private:
+    const String m_name;
+    std::unique_ptr<Register> m_register;
+};
+
 Register& RegisterManager::operator[](StringView reg) const
 {
     if (reg.length() == 1)
@@ -44,7 +84,7 @@ void RegisterManager::add_register(Codepoint c, std::unique_ptr<Register> reg)
 {
     auto& reg_ptr = m_registers[c];
     kak_assert(not reg_ptr);
-    reg_ptr = std::move(reg);
+    reg_ptr = std::make_unique<WatchedRegister>(c, std::move(reg));
 }
 
 }

@@ -7,11 +7,11 @@
 #include "hash_map.hh"
 #include "string.hh"
 #include "vector.hh"
+#include "context.hh"
 
 namespace Kakoune
 {
 
-class Context;
 
 class Register
 {
