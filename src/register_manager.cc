@@ -16,9 +16,7 @@ static inline String content_to_string(ConstArrayView<String> values)
     for (auto it : values)
     {
         if (not first)
-        {
             res += list_separator;
-        }
         res += escape(it, list_separator, '\\');
         first = false;
     }
@@ -34,8 +32,10 @@ public:
         {}
     void set(Context& ctx, ConstArrayView<String> values) override
     {
+        auto old_values_view = m_register->get(ctx);
+        Vector<String> old_values{old_values_view.begin(), old_values_view.end()};
         m_register->set(ctx, values);
-        ctx.hooks().run_hook("RegisterChanged", format("{}={}", m_name, content_to_string(values)), ctx);
+        ctx.hooks().run_hook("RegisterChanged", format("{}={}", m_name, content_to_string(old_values)), ctx);
     }
 
     ConstArrayView<String> get(const Context& ctx) override
